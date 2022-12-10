@@ -29,13 +29,13 @@ class CustomSelect {
                 .filter((item, index, array) => isNaN(item) || array.indexOf(Number(item)) !== index).length
             //Option.text отсуствует
             || this.#options.filter(i => !i.text).length) {
-            document.querySelector(".container__title").textContent="Что-то пошло не так."
+            document.querySelector(".container__title").textContent = "Что-то пошло не так."
             return
         }
         this.#dropdownTemplate(container);
         this.#selectDropdownList = document.querySelector(".select-dropdown__list");
-        this.#listenList(document.querySelector(".select-dropdown__button"),this.#toggleUl);
-        this.#listenList(this.#selectDropdownList,this.#processSelection);
+        this.#listenList(document.querySelector(".select-dropdown__button"), this.#toggleUl);
+        this.#listenList(this.#selectDropdownList, this.#processSelection);
     }
 
     #dropdownTemplate(container) {
