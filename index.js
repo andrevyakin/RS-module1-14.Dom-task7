@@ -34,7 +34,7 @@ class CustomSelect {
         }
         this.#dropdownTemplate(container);
         this.#selectDropdownList = document.querySelector(".select-dropdown__list");
-        this.#listenList(document.querySelector(".select-dropdown__button"), this.#toggleUl);
+        this.#listenList(document.querySelector(".select-dropdown__button"), () => this.#selectDropdownList.classList.add("active"));
         this.#listenList(this.#selectDropdownList, this.#processSelection);
     }
 
@@ -79,16 +79,14 @@ class CustomSelect {
         htmlElement.addEventListener("click", callback.bind(this));
     }
 
-    #toggleUl() {
-        this.#selectDropdownList.classList.toggle("active");
-    }
-
-    #toggleLi(selectedItem) {
-        this.#selectDropdownList.childNodes.forEach(node => {
-            if (node.classList.contains("selected"))
-                node.classList.toggle("selected");
-        });
-        selectedItem.classList.toggle("selected");
+    #toggleList(token, toggleChildNodes) {
+        if (toggleChildNodes)
+            this.#selectDropdownList.childNodes.forEach(node => {
+                if (node.classList.contains(token))
+                    node.classList.toggle(token);
+            })
+        else
+            this.#selectDropdownList.classList.toggle(token);
     }
 
     #processSelection(event) {
@@ -96,8 +94,9 @@ class CustomSelect {
         if (isSelectedItem) {
             this.#currentSelectedOption = this.#options.find(i => i.value === Number(isSelectedItem.dataset.value));
             document.querySelector(".select-dropdown__text").textContent = this.#currentSelectedOption.text;
-            this.#toggleLi(isSelectedItem);
-            this.#toggleUl();
+            this.#toggleList("selected", true);
+            isSelectedItem.classList.toggle("selected");
+            this.#toggleList( "active", false);
         }
     }
 }
