@@ -18,15 +18,16 @@ class CustomSelect {
 
     render(container) {
         if (
-            //Container не DOM Element или не передан при вызове
+            //Container не DOM Element, или не передан при вызове
             !(container instanceof Element)
             //Id не число
             || isNaN(this.#id)
             //Option не массив
             || !Array.isArray(this.#options)
-            //Option.value не уникален, или не число
+            //Option.value не число, или не уникален
             || this.#options.map(i => i.value)
-                .filter((item, index, array) => isNaN(item) || array.indexOf(Number(item)) !== index).length
+                .filter((item, index, array) => isNaN(item)
+                    || array.indexOf(Number(item)) !== index).length
             //Option.text отсуствует
             || this.#options.filter(i => !i.text).length) {
             document.querySelector(".container__title").textContent = "Что-то пошло не так."
@@ -34,7 +35,7 @@ class CustomSelect {
         }
         this.#dropdownTemplate(container);
         this.#selectDropdownList = document.querySelector(".select-dropdown__list");
-        this.#listenList(document.querySelector(".select-dropdown__button"), () => this.#selectDropdownList.classList.add("active"));
+        this.#listenList(document.querySelector(".select-dropdown__button"), this.#toggleList);
         this.#listenList(this.#selectDropdownList, this.#processSelection);
     }
 
@@ -79,14 +80,15 @@ class CustomSelect {
         htmlElement.addEventListener("click", callback.bind(this));
     }
 
-    #toggleList(token, toggleChildNodes) {
-        if (toggleChildNodes)
-            this.#selectDropdownList.childNodes.forEach(node => {
-                if (node.classList.contains(token))
-                    node.classList.toggle(token);
-            })
-        else
-            this.#selectDropdownList.classList.toggle(token);
+    #toggleList() {
+        this.#selectDropdownList.classList.toggle("active");
+    }
+
+    #toggleChildNodesList() {
+        this.#selectDropdownList.childNodes.forEach(node => {
+            if (node.classList.contains("selected"))
+                node.classList.toggle("selected");
+        })
     }
 
     #processSelection(event) {
@@ -94,9 +96,9 @@ class CustomSelect {
         if (isSelectedItem) {
             this.#currentSelectedOption = this.#options.find(i => i.value === Number(isSelectedItem.dataset.value));
             document.querySelector(".select-dropdown__text").textContent = this.#currentSelectedOption.text;
-            this.#toggleList("selected", true);
+            this.#toggleChildNodesList();
             isSelectedItem.classList.toggle("selected");
-            this.#toggleList( "active", false);
+            this.#toggleList();
         }
     }
 }
