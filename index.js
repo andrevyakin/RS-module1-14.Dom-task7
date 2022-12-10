@@ -34,8 +34,8 @@ class CustomSelect {
         }
         this.#dropdownTemplate(container);
         this.#selectDropdownList = document.querySelector(".select-dropdown__list");
-        this.#listenUl();
-        this.#listenLi();
+        this.#listenList(document.querySelector(".select-dropdown__button"),this.#toggleUl);
+        this.#listenList(this.#selectDropdownList,this.#processSelection);
     }
 
     #dropdownTemplate(container) {
@@ -75,13 +75,8 @@ class CustomSelect {
             return el;
     }
 
-    #listenUl() {
-        document.querySelector(".select-dropdown__button")
-            .addEventListener("click", this.#toggleUl.bind(this));
-    }
-
-    #listenLi() {
-        this.#selectDropdownList.addEventListener("click", this.#processSelection.bind(this));
+    #listenList(htmlElement, callback) {
+        htmlElement.addEventListener("click", callback.bind(this));
     }
 
     #toggleUl() {
