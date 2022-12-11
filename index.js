@@ -17,26 +17,32 @@ class CustomSelect {
     }
 
     render(container) {
-        if (
-            //Container не DOM Element, или не передан при вызове
-            !(container instanceof Element)
-            //Id не число
-            || isNaN(this.#id)
-            //Option не массив
-            || !Array.isArray(this.#options)
-            //Option.value не число, или не уникален
-            || this.#options.map(i => i.value)
-                .filter((item, index, array) => isNaN(item)
-                    || array.indexOf(Number(item)) !== index).length
-            //Option.text отсуствует
-            || this.#options.filter(i => !i.text).length) {
-            document.querySelector(".container__title").textContent = "Что-то пошло не так."
-            return
+        try {
+            this.#dataValidation(container);
+        } catch (e) {
+            document.querySelector(".container__title").textContent = "Что-то пошло не так.";
+            console.error(e);
+            return;
         }
         this.#dropdownTemplate(container);
         this.#selectDropdownList = document.querySelector(".select-dropdown__list");
         this.#listenList(document.querySelector(".select-dropdown__button"), this.#toggleList);
         this.#listenList(this.#selectDropdownList, this.#processSelection);
+    }
+
+    #dataValidation(container) {
+        if (!(container instanceof Element))
+            throw new Error("container не DOM Element или не передан.");
+        if (isNaN(this.#id))
+            throw new Error("Id не число.");
+        if (!Array.isArray(this.#options))
+            throw new Error("Options не массив.");
+        if (this.#options.map(i => i.value)
+            .filter((item, index, array) => isNaN(item)
+                || array.indexOf(Number(item)) !== index).length)
+            throw new Error("Option.value не число, или не уникально.");
+        if (this.#options.filter(i => !i.text).length)
+            throw new Error("Option.text отсуствует.");
     }
 
     #dropdownTemplate(container) {
@@ -88,7 +94,7 @@ class CustomSelect {
         this.#selectDropdownList.childNodes.forEach(node => {
             if (node.classList.contains("selected"))
                 node.classList.toggle("selected");
-        })
+        });
     }
 
     #processSelection(event) {
